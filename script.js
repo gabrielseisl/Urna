@@ -1,8 +1,6 @@
-
-
-
 // -- Salvar e resgatar dados do LOCALSTORAGE
-function carregarCanditados() {
+
+function carregarCandidatos() {
     const dados = localStorage.getItem("candidatos");
     return dados ? JSON.parse(dados) : []
 }
@@ -11,88 +9,94 @@ function salvarCandidatos(candidatos) {
     localStorage.setItem("candidatos", JSON.stringify(candidatos));
 }
 
+
+function carregarVotos() {
+    const dados = localStorage.getItem("votos");
+    return dados ? JSON.parse(dados) : {};
+ 
+}
+
 function salvarVotos(votos) {
+
     localStorage.setItem("votos", JSON.stringify(votos));
 }
 
-const abas = document.querySelector(".aba")
-const telas = document.querySelector(".tela")
 // ---- Navegação entre páginas
 
-abas.forEach(function(aba) {
+const abas = document.querySelectorAll(".aba")
+const telas = document.querySelectorAll(".tela")
+
+abas.forEach(function (aba) {
     aba.addEventListener("click", function () {
         abas.forEach(a => a.classList.remove("ativa"));
         telas.forEach(t => t.classList.remove("ativa"));
 
-
         aba.classList.add("ativa")
-        document.getElemetBrId(aba.dataset.tela).classList.add("ativa")
+        document.getElementById(aba.dataset.tela).classList.add("ativa")
 
         if (aba.dataset.tela == "candidatos") mostrarCandidatos();
         if (aba.dataset.tela == "resultado") mostrarResultado();
-
-
-    })
+    });
 });
 
-/// --- Cadastro de candidatos
-const formaCandidato = document.getElementById("formCandidato");
+// --- Cadastro de candidatos 
+
+const formCandidato = document.getElementById("formCandidato");
 const listaCandidatos = document.getElementById("listaCandidatos");
 
-formCandidato.addEventListener("submit",function(evento) {
+formCandidato.addEventListener("submit", function (evento) {
     evento.preventDefault();
 
-    const nome = document.getElementById("nomeCandidato").ariaValueMax.trim();
-    const numero = document.getElementById("numeroCandidato").ariaValueMax.trim();
-
-    const candidatos = carregarCanditados();
+    const nome = document.getElementById("nomeCandidato").value.trim();
+    const numero = document.getElementById("numeroCandidato").value.trim();
+    const candidatos = carregarCandidatos();
 
     const existente = candidatos.find(c => c.numero === numero);
-    if(existente) {
-        alert("Já existe um candidato com o número" = numero)
+    if (existente) {
+        alert("Já existe um candidato com o número" + numero);
         return;
     }
 
     candidatos.push({nome: nome, numero: numero});
     salvarCandidatos(candidatos);
 
-    formaCandidato.reset();
-    mostrarCandidatos()
+    formCandidato.reset();
+    mostrarCandidatos();
 });
 
 function mostrarCandidatos() {
-    const candidatos = carregarCanditados();
+    const candidatos = carregarCandidatos();
     listaCandidatos.innerHTML = "";
 
     if (candidatos.length === 0) {
-        listaCandidatos.innerHTML = "<li>Nenhum candidato cadastrado ainda. </li>";
+        listaCandidatos.innerHTML = "<li>Nenhum candidato cadastrado ainda.</li>";
         return;
-
     }
 
     candidatos.forEach(function (candidato) {
         const li = document.createElement("li");
         li.innerHTML = `
-        <span><strong>${candidato.numero}</strong> - ${numero.nome}</span>
-        <button onClick="reomverCandidato('${candidato.numero})')">Remover</button>`;
+        <span><strong>${candidato.numero}</strong> - ${candidato.nome}</span>
+        <button onClick="removerCandidato('${candidato.numero}')">Remover</button>`;
         listaCandidatos.appendChild(li);
     });
 }
 
-function reomverCandidato(numero) {
-    const candidatos = carregarCanditados().filter(c => c.numero !== numero);
+
+function removerCandidato(numero) {
+    const candidatos = carregarCandidatos().filter(c => c.numero !== numero);
     salvarCandidatos(candidatos);
     mostrarCandidatos();
 }
 
 // ---- Votação
 
-const inputVoto = document.getElementById("numeroVoto");
+const inputVoto = document.getElementById("numerovoto");
 const previa = document.getElementById("previa");
 const telaFim = document.getElementById("fim");
-const urna = document.getElementById(".urna");
+const urna = document.getElementById("urna");
 
-inputVoto.addEventListener("input",function(){
+inputVoto.addEventListener("input", function () { 
     inputVoto.value = inputVoto.value.replace(/\D/g, "");
     atualizarPrevia();
 });
@@ -105,74 +109,72 @@ function atualizarPrevia() {
         return;
     }
 
+    const candidato = carregarCandidatos().find(c => c.numero === numero);
 
-}
-
-   const candidato = carregarCandidatos().find(c => c.numero === numero);
-
-if (candidato) {
-    previa.innerHTML = `Candidato: <strong>${candidato.nome}</strong>`;
-} else {
-    previa.innerHTML = `<span class="nulo">Número Errado - Voto Nulo</span>`;
-}
-
-function registrarVoto(chave) {
-    const votos = carregarVotos();
-    votos[chave] = (votos[chave] || 0) = 1;
-    salvarVotos();
-    mostrarFim();
-
-}
-
-document.getElementById("btnConfirma").addEventListener("click", function () {
-    const numero = inputVoto.value;
-
-    if(numero.length < 2) {
-        alert("Digite o número do candidato (2 dígitos).");
-        return;
+    if(candidato) {
+        previa.innerHTML = `Candidato: <strong>${candidato.nome}</strong>`;
+       } else {
+        previa.innerHTML = `<span class="nulo">Número Errado - Voto Nulo</span>`;
+       } 
     }
 
+    function registrarVoto(chave) {
+        const votos = carregarVotos();
+        votos[chave] = (votos[chave] || 0) + 1;
+        
+        salvarVotos(votos);
+        mostrarFim();
+    }
+
+    
+    document.getElementById('btnConfirma').addEventListener('click', function () {
+    const numero = inputVoto.value;
+    
+    if (numero.length < 2) {
+        alert('Digite o número do candidato (2 dígitos).');
+        return;
+    }
+    
     const candidato = carregarCandidatos().find(c => c.numero === numero);
-  registrarVoto(candidato ? numero : "nulo");
+    registrarVoto(candidato ? numero : 'nulo');
 });
 
-document.getElementById("btnBranco").addEventListener("click", function() {
 
-});
+    document.getElementById("btnBranco").addEventListener("click", function() {
+        registrarVoto("branco");
+    });
 
-document.getElementById("btnCorrige").addEventListener("click", limpaUrna);
+    document.getElementById("btnCorrige").addEventListener("click", limpaUrna);
+
+    function limpaUrna() {
+        inputVoto.value = "";
+        previa.innerHTML = "";
+        inputVoto.focus();
+    }
+
+    function mostrarFim() {
+        
+        urna.style.display = "none";
+        telaFim.style.display = "block";
 
 
-function limpaUrna() {
-    inputVoto.value = "";
-    previa.innerHTML = "";
-    inputVoto.focus();
+    setTimeout(function () {
+        telaFim.style.display = "none";
+        urna.style.display = "block";
+        limpaUrna();
+    }, 2000);
 }
-
-function mostrarFim() {
-    urna.style.previa = "none";
-    telaFim.style.display = "block";
-}
-
-setTimeout(function(){
-    telaFim.style.display = "none";
-    urna.style.display = "block";
-    limpaUrna();
-}, 2000);    
-
-// ----Resultado
-
+// ----- Resultado
 function mostrarResultado() {
-    const candidatos = carregarCanditados();
+    const candidatos = carregarCandidatos();
     const votos = carregarVotos();
     const lista = document.getElementById("listaResultado");
 
-
     const resultado = candidatos.map(c => ({
         nome: `${c.numero} - ${c.nome}`,
-        qdt: votos[c.numero] || 0
+        
+        qtd: votos[c.numero] || 0
     }));
-
     resultado.push({nome: "Brancos", qtd: votos.branco || 0});
     resultado.push({nome: "Nulos", qtd: votos.nulo || 0});
 
@@ -182,25 +184,25 @@ function mostrarResultado() {
     document.getElementById("totalVotos").textContent = `Total de votos: ${total}`;
 
     lista.innerHTML = "";
-    resultado.forEach(function (item){
+    resultado.forEach(function (item) {
         const porcentagem = total > 0 ? ((item.qtd / total) * 100).toFixed(1) : 0;
+
         lista.innerHTML += `
         <div class="item-resultado">
-        <div class ="linha">
-            <span>${item.nome}</nome>
+         <div class="linha">
+            <span>${item.nome}</span>
             <span>${item.qtd} voto(s) - ${porcentagem}%</span>
-            </div>
-            <div class="barra"><div style="width: ${porcentagem}%></div><div>
-            </div>`;
+        </div>
+        <div class="barra"><div style="width: ${porcentagem}%"></div></div>
+        </div>`;
     });
 }
 
-document.getAnimations("btnZerar").addEventListener("click", function () {
-    if(confirm("Tem certeza que deseja apagar TODOS os votos?")) {
+document.getElementById("btnZerar").addEventListener("click", function () {
+    if (confirm("Tem certeza que deseha pagar TODOS os votos?")) {
         localStorage.removeItem("votos");
         mostrarResultado();
     }
-
 });
 
 inputVoto.focus();
