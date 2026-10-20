@@ -26,20 +26,32 @@ function salvarVotos(votos) {
 const abas = document.querySelectorAll(".aba")
 const telas = document.querySelectorAll(".tela")
 
+function abrirTela(nome) {
+    abas.forEach(a => a.classList.toggle("ativa", a.dataset.tela == nome));
+    telas.forEach(t => t.classList.toggle("ativa", t.id == nome));
+
+    if (nome == "candidatos") mostrarCandidatos();
+    if (nome == "resultado") mostrarResultado();
+}
+
 abas.forEach(function (aba) {
     aba.addEventListener("click", function () {
-        abas.forEach(a => a.classList.remove("ativa"));
-        telas.forEach(t => t.classList.remove("ativa"));
+        const nome = aba.dataset.tela;
 
-        aba.classList.add("ativa")
-        document.getElementById(aba.dataset.tela).classList.add("ativa")
+        // Candidatos SEMPRE pede login
+        if (nome == "candidatos") {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userLogado");
+            localStorage.setItem("destino", "candidatos");
+            window.location.href = "./login.html";
+            return;
+        }
 
-        if (aba.dataset.tela == "candidatos") mostrarCandidatos();
-        if (aba.dataset.tela == "resultado") mostrarResultado();
+        abrirTela(nome);
     });
 });
 
-// --- Cadastro de candidatos 
+// --- Cadastro de candidatos
 
 const formCandidato = document.getElementById("formCandidato");
 const listaCandidatos = document.getElementById("listaCandidatos");
@@ -53,7 +65,7 @@ formCandidato.addEventListener("submit", function (evento) {
 
     const existente = candidatos.find(c => c.numero === numero);
     if (existente) {
-        alert("Já existe um candidato com o número" + numero);
+        alert("Já existe um candidato com o número " + numero);
         return;
     }
 
@@ -81,7 +93,6 @@ function mostrarCandidatos() {
         listaCandidatos.appendChild(li);
     });
 }
-
 
 function removerCandidato(numero) {
     const candidatos = carregarCandidatos().filter(c => c.numero !== numero);
@@ -208,3 +219,9 @@ document.getElementById("btnZerar").addEventListener("click", function () {
 inputVoto.focus();
 
 
+if (window.location.hash == "#candidatos" && localStorage.getItem("token")) {
+    abrirTela("candidatos");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userLogado");
+    history.replaceState(null, "", "index.html");
+}

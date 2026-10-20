@@ -1,0 +1,79 @@
+body{
+    background-color: #6e6d6d;
+    color: white;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.card h1 {
+    font-size: 90px;
+    margin: 0 0 15px 0;
+    margin-left: -50px;
+    margin-bottom: 0px;
+}
+
+#usuario{
+    width: 250px;
+    height: 20px;
+    padding: 10px;
+    border: 1px solid #333333;
+    background: white;
+    color: #222222;
+    font-size: 20px;
+}
+
+#senha {
+    width: 250px;
+    height: 20px;
+    padding: 10px;
+    border: 1px solid #333333;
+    background: white;
+    color: #222222;
+    font-size: 20px;
+}
+
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 800px;
+}
+
+#linkCadastro{
+    color: white;
+
+}
+
+
+.justify-center button{
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid #333333;
+    background: #ffffff;
+    color: rgb(2, 2, 2);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: -45px;
+}
+
+.label-float {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.card {
+    width: 320px;
+}
+
+#msgError{
+    color: red;
+    margin-top: 10px; 
+    margin-bottom: 10px;
+    font-size: 24px;
+    margin: 0 0 15px 0;
+    margin-left: -49px;
+}
