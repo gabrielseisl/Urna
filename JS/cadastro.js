@@ -58,31 +58,6 @@ usuario.addEventListener('keyup', () => {
 })
 
 
-// Event listener para validar senha
-senha.addEventListener('keyup', () => {
-  if(senha.value.length <= 7){ // Se a senha for menor ou igual a 7 caracteres mudar a cor pra vermelho e pedir uma senha maior.
-    labelSenha.setAttribute('style', 'color: red')
-    labelSenha.innerHTML = 'Senha *Insira no mínimo 8 caracteres'
-    senha.setAttribute('style', 'border-color: red')
-    validSenha = false
-  } else if (!/[A-Z]/.test(senha.value)) { // Se a senha não conter 1 caracter maíusculo mudar a cor pra vermelho e pedir pelo menos um caractere maiúsculo.
-    labelSenha.setAttribute('style', 'color: red')
-    labelSenha.innerHTML = 'Senha *Insira pelo menos um caractere maiúsculo'
-    senha.setAttribute('style', 'border-color: red')
-    validSenha = false
-  } else if (!/[\W_]/.test(senha.value)) {  // Exige que a senha contenha pelo menos um símbolo, se não tiver  mudar a cor pra vermelho e pedir pelo menos um símbolo.
-    labelSenha.setAttribute('style', 'color: red')
-    labelSenha.innerHTML = 'Senha *Insira pelo menos um símbolo'
-    senha.setAttribute('style', 'border-color: red')
-    validSenha = false
-  } else {
-    labelSenha.setAttribute('style', 'color: green')
-    labelSenha.innerHTML = 'Senha'
-    senha.setAttribute('style', 'border-color: green')
-    validSenha = true
-  }
-})
-
 // Event listener para confirmar a senha
 confirmSenha.addEventListener('keyup', () => {
   if(senha.value != confirmSenha.value){ // Verifica se as senhas digitas são iguais, se não forem avisa que são diferentes.

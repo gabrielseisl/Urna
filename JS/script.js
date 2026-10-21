@@ -21,51 +21,40 @@ function salvarVotos(votos) {
     localStorage.setItem("votos", JSON.stringify(votos));
 }
 
+
 // ---- Navegação entre páginas
 
 const abas = document.querySelectorAll(".aba")
 const telas = document.querySelectorAll(".tela")
 
-function abrirTela(nome) {
-    abas.forEach(a => a.classList.toggle("ativa", a.dataset.tela == nome));
-    telas.forEach(t => t.classList.toggle("ativa", t.id == nome));
-
-    if (nome == "candidatos") mostrarCandidatos();
-    if (nome == "resultado") mostrarResultado();
-}
-
 abas.forEach(function (aba) {
     aba.addEventListener("click", function () {
-        const nome = aba.dataset.tela;
+        abas.forEach(a => a.classList.remove("ativa"));
+        telas.forEach(t => t.classList.remove("ativa"));
 
-        // Candidatos SEMPRE pede login
-        if (nome == "candidatos") {
-            localStorage.removeItem("token");
-            localStorage.removeItem("userLogado");
-            localStorage.setItem("destino", "candidatos");
-            window.location.href = "./login.html";
-            return;
-        }
+        aba.classList.add("ativa")
+        document.getElementById(aba.dataset.tela).classList.add("ativa")
 
-        abrirTela(nome);
+        if (aba.dataset.tela == "candidatos") entrar();
+        mostrarCandidatos();
+        if (aba.dataset.tela == "resultado") mostrarResultado();
     });
 });
 
-// --- Cadastro de candidatos
+// --- Cadastro de candidatos 
 
 const formCandidato = document.getElementById("formCandidato");
 const listaCandidatos = document.getElementById("listaCandidatos");
 
 formCandidato.addEventListener("submit", function (evento) {
     evento.preventDefault();
-
     const nome = document.getElementById("nomeCandidato").value.trim();
     const numero = document.getElementById("numeroCandidato").value.trim();
     const candidatos = carregarCandidatos();
 
     const existente = candidatos.find(c => c.numero === numero);
     if (existente) {
-        alert("Já existe um candidato com o número " + numero);
+        alert("Já existe um candidato com o número" + numero);
         return;
     }
 
@@ -93,6 +82,7 @@ function mostrarCandidatos() {
         listaCandidatos.appendChild(li);
     });
 }
+
 
 function removerCandidato(numero) {
     const candidatos = carregarCandidatos().filter(c => c.numero !== numero);
@@ -217,11 +207,3 @@ document.getElementById("btnZerar").addEventListener("click", function () {
 });
 
 inputVoto.focus();
-
-
-if (window.location.hash == "#candidatos" && localStorage.getItem("token")) {
-    abrirTela("candidatos");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userLogado");
-    history.replaceState(null, "", "index.html");
-}
